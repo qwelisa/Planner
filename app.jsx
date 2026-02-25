@@ -115,3 +115,29 @@ xport default function App() {
       setRegisterError("Errore nella registrazione: " + (err?.message || '')); 
     }
   };
+
+
+  // Handlers
+  const handleAddList = async (e) => {
+    e.preventDefault();
+    if (!newListName.trim()) return;
+    // Collego la lista all'utente loggato
+    const created = await pb.collection('lists').create({ name: newListName, user: user.id });
+    setNewListName("");
+    setSelectedList(created);
+  };
+
+  const handleAddTask = async (e) => {
+    e.preventDefault();
+    if (!newTask.title.trim() || !selectedList) return;
+    // Assicuro che la data sia sempre nel formato YYYY-MM-DD
+    let date = newTask.date;
+    if (date) {
+      const d = new Date(date);
+      date = d.toISOString().slice(0, 10);
+    } else {
+      date = '';
+    }
+    await pb.collection('tasks').create({ ...newTask, date, list: selectedList.id });
+    setNewTask({ title: "", date: "", description: "" });
+  };
