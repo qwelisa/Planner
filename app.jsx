@@ -141,3 +141,69 @@ xport default function App() {
     await pb.collection('tasks').create({ ...newTask, date, list: selectedList.id });
     setNewTask({ title: "", date: "", description: "" });
   };
+
+  // Filtra i task per lista selezionata e ricerca
+  const filteredTasks = allTasks.filter(t =>
+    t.list === selectedList?.id &&
+    (t.title.toLowerCase().includes(search.toLowerCase()) ||
+     (t.description || '').toLowerCase().includes(search.toLowerCase()))
+  );
+
+  if (loading) return <div className="loader">Caricamento...</div>;
+
+  if (!user) {
+    return (
+      <div className="auth-container">
+        {showRegister ? (
+          <form className="auth-form" onSubmit={handleRegister}>
+            <h2>Registrati</h2>
+            <input
+              type="email"
+              placeholder="Email"
+              value={registerForm.email}
+              onChange={e => setRegisterForm(f => ({ ...f, email: e.target.value }))}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={registerForm.password}
+              onChange={e => setRegisterForm(f => ({ ...f, password: e.target.value }))}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Conferma Password"
+              value={registerForm.passwordConfirm}
+              onChange={e => setRegisterForm(f => ({ ...f, passwordConfirm: e.target.value }))}
+              required
+            />
+            <button type="submit">Registrati</button>
+            <button type="button" onClick={() => setShowRegister(false)} style={{marginTop:'0.5rem'}}>Hai già un account? Accedi</button>
+            {registerError && <div className="auth-error">{registerError}</div>}
+          </form>
+        ) : (
+          <form className="auth-form" onSubmit={handleLogin}>
+            <h2>Accedi</h2>
+            <input
+              type="email"
+              placeholder="Email"
+              value={authForm.email}
+              onChange={e => setAuthForm(f => ({ ...f, email: e.target.value }))}
+              required
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={authForm.password}
+              onChange={e => setAuthForm(f => ({ ...f, password: e.target.value }))}
+              required
+            />
+            <button type="submit">Accedi</button>
+            <button type="button" onClick={() => setShowRegister(true)} style={{marginTop:'0.5rem'}}>Non hai un account? Registrati</button>
+            {authError && <div className="auth-error">{authError}</div>}
+          </form>
+        )}
+      </div>
+    );
+  }
