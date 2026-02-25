@@ -79,3 +79,39 @@ xport default function App() {
     fetchAllTasks();
   }, [tasksNeedRefresh]);
  
+
+  // Gestione login/logout
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setAuthError("");
+    try {
+      await pb.collection('users').authWithPassword(authForm.email, authForm.password);
+      setUser(pb.authStore.model);
+    } catch (err) {
+      setAuthError("Credenziali non valide");
+    }
+  };
+  const handleLogout = () => {
+    pb.authStore.clear();
+    setUser(null);
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setRegisterError("");
+    if (registerForm.password !== registerForm.passwordConfirm) {
+      setRegisterError("Le password non coincidono");
+      return;
+    }
+    try {
+      await pb.collection('users').create({
+        email: registerForm.email,
+        password: registerForm.password,
+        passwordConfirm: registerForm.passwordConfirm
+      });
+      setShowRegister(false);
+      setAuthForm({ email: registerForm.email, password: registerForm.password });
+    } catch (err) {
+      setRegisterError("Errore nella registrazione: " + (err?.message || '')); 
+    }
+  };
