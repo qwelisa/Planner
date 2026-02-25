@@ -46,3 +46,36 @@ xport default function App() {
     pb.collection('lists').subscribe('*', initData);
     return () => pb.collection('lists').unsubscribe();
   }, [user]);
+
+  // Caricamento di tutti i task globali
+  useEffect(() => {
+    let ignore = false;
+    const fetchAllTasks = async () => {
+      const res = await pb.collection('tasks').getFullList();
+      // Conversione formato data: estraggo YYYY-MM-DD da ISO
+      const fixed = res.map(t => ({
+        ...t,
+        date: t.date ? t.date.slice(0, 10) : ''
+      }));
+      if (!ignore) setAllTasks(fixed);
+    };
+    fetchAllTasks();
+    const unsub = pb.collection('tasks').subscribe('*', () => setTasksNeedRefresh(t => !t));
+    return () => {
+      ignore = true;
+      pb.collection('tasks').unsubscribe();
+    };
+  }, []);
+
+  useEffect(() => {
+    const fetchAllTasks = async () => {
+      const res = await pb.collection('tasks').getFullList();
+      const fixed = res.map(t => ({
+        ...t,
+        date: t.date ? t.date.slice(0, 10) : ''
+      }));
+      setAllTasks(fixed);
+    };
+    fetchAllTasks();
+  }, [tasksNeedRefresh]);
+ 
