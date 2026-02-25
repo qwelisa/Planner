@@ -25,3 +25,24 @@ xport default function App() {
   const [showRegister, setShowRegister] = useState(false);
   const [registerForm, setRegisterForm] = useState({ email: "", password: "", passwordConfirm: "" });
   const [registerError, setRegisterError] = useState("");
+
+  / Caricamento Liste Iniziale
+  useEffect(() => {
+    if (!user) return;
+    const initData = async () => {
+      try {
+        // Filtro le liste per utente loggato
+        const res = await pb.collection('lists').getFullList({
+          filter: `user = '${user.id}'`
+        });
+        setLists(res);
+        const savedId = localStorage.getItem('selectedListId');
+        if (savedId) setSelectedList(res.find(l => l.id === savedId));
+      } finally {
+        setLoading(false);
+      }
+    };
+    initData();
+    pb.collection('lists').subscribe('*', initData);
+    return () => pb.collection('lists').unsubscribe();
+  }, [user]);
