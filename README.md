@@ -56,6 +56,16 @@ L'app si apre con una schermata di login e registrazione. Una volta autenticato,
 
 ---
 
+## Come funziona l'applicazione
+
+Quando si apre l'applicazione per la prima volta, viene mostrata una schermata di autenticazione che permette di accedere con un account esistente oppure di registrarne uno nuovo inserendo email e password. La registrazione è importante perché ogni lista e ogni task vengono salvati su PocketBase legati all'account dell'utente: in questo modo i dati sono personali e persistenti, e si ritrovano esattamente com'erano ogni volta che si effettua il login.
+
+Una volta autenticati, si accede alla schermata principale dell'app, divisa in due aree. Sulla sinistra è presente una sidebar che mostra tutte le liste create dall'utente, con la possibilità di aggiungerne di nuove tramite un campo di testo in cima. Sulla destra invece si trova l'area principale, dove cliccando su una lista si possono visualizzare tutti i task ad essa associati e aggiungerne di nuovi specificando un titolo, una data di scadenza e una descrizione opzionale.
+
+I task sono mostrati come schede nella parte centrale della pagina. Passando il mouse sopra uno di essi appare un tooltip che mostra i dettagli completi del task, ovvero la descrizione e la data di scadenza, senza dover aprire nessuna pagina aggiuntiva. In fondo alla pagina è inoltre sempre visibile un calendario mensile, che riporta automaticamente i task nei giorni corrispondenti alla loro data, offrendo così una panoramica visiva di tutto ciò che è pianificato nel mese corrente.
+
+---
+
 ## Note sullo sviluppo
 
 Per la realizzazione del progetto mi sono avvalsa dell'aiuto dell'intelligenza artificiale per generare una base di partenza, soprattutto per la struttura dei componenti e per i CSS. Ho poi rivisto e modificato il codice per adattarlo alle mie esigenze, correggendo parti che non funzionavano come volevo e aggiungendo funzionalità come il tooltip sui task, il filtro per utente nelle liste e la sincronizzazione in tempo reale con PocketBase tramite i metodi `subscribe`.
