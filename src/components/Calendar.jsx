@@ -39,10 +39,34 @@ const Calendar = ({ tasks, lists }) => {
           const dateStr = day.toISOString().slice(0, 10);
           // Filtra i task che hanno una data che corrisponde a questo giorno
           const dayTasks = tasks.filter(t => {
-            if (!t.date) return false; // Salta task senza data
-            // Normalizza la data per essere sicuro
-            const taskDate = t.date.toString().trim();
-            return taskDate === dateStr;
+            if (!t.date) return false;
+            
+            // Prova diversi formati di confronto
+            let taskDateStr = String(t.date).trim();
+            
+            // Se è in formato locale, prova a convertirlo
+            if (taskDateStr.includes('/')) {
+              // Formato potrebbe essere DD/MM/YYYY
+              const parts = taskDateStr.split('/');
+              if (parts.length === 3) {
+                taskDateStr = `${parts[2]}-${parts[1]}-${parts[0]}`;
+              }
+            }
+            
+            // Se è in formato YYYY-MM-DD, usa così com'è
+            // Altrimenti prova a parsarlo come data
+            if (taskDateStr.length === 10 && taskDateStr.includes('-')) {
+              return taskDateStr === dateStr;
+            }
+            
+            // Last resort: try parsing the date
+            try {
+              const taskDate = new Date(taskDateStr);
+              const taskDateFormatted = taskDate.toISOString().slice(0, 10);
+              return taskDateFormatted === dateStr;
+            } catch (e) {
+              return false;
+            }
           });
           
           return (
