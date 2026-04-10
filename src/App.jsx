@@ -7,6 +7,7 @@ import pb from './pocketbase';
 import './App.css';
 
 function App() {
+  // --- State per liste, task e UI ---
   const [lists, setLists] = useState([]);
   const [selectedList, setSelectedList] = useState(null);
   const [tasks, setTasks] = useState([]);
@@ -14,6 +15,7 @@ function App() {
   const [newListName, setNewListName] = useState("");
   const [newTask, setNewTask] = useState({ title: "", description: "", date: "" });
 
+  // --- State per autenticazione ---
   const [user, setUser] = useState(pb.authStore.model);
   const [authMode, setAuthMode] = useState('login');
   const [authEmail, setAuthEmail] = useState('');
@@ -21,6 +23,7 @@ function App() {
   const [authError, setAuthError] = useState('');
   const [authLoading, setAuthLoading] = useState(false);
 
+  // Monitora cambamenti nello stato di autenticazione di PocketBase
   useEffect(() => {
     const unsubscribe = pb.authStore.onChange(() => {
       setUser(pb.authStore.model);
@@ -28,6 +31,7 @@ function App() {
     return unsubscribe;
   }, []);
 
+  // Carica le liste dell'utente da PocketBase e ripristina la lista selezionata
   const fetchLists = async () => {
     setLoading(true);
     try {
@@ -49,6 +53,7 @@ function App() {
     }
   };
 
+  // Carica le liste quando l'utente accede e sottoscrive agli aggiornamenti in tempo reale
   useEffect(() => {
     if (!user) {
       setLists([]);
@@ -62,6 +67,7 @@ function App() {
     return () => pb.collection('lists').unsubscribe();
   }, [user]);
 
+  // Carica i task della lista selezionata e sottoscrive agli aggiornamenti
   useEffect(() => {
     if (!user || !selectedList) {
       setTasks([]);
@@ -91,7 +97,7 @@ function App() {
     if (selectedList) localStorage.setItem('selectedListId', selectedList.id);
   }, [selectedList]);
 
-  // Add list
+  // Crea una nuova lista
   const handleAddList = async (e) => {
     e.preventDefault();
     if (!newListName.trim() || !user) return;
@@ -109,7 +115,7 @@ function App() {
     }
   };
 
-  // Add task
+  // Crea un nuovo task nella lista selezionata
   const handleAddTask = async (e) => {
     e.preventDefault();
     if (!newTask.title.trim() || !selectedList) return;
@@ -127,6 +133,7 @@ function App() {
     }
   };
 
+  // Gestisce login e registrazione
   const handleAuthSubmit = async (e) => {
     e.preventDefault();
     setAuthError('');
@@ -151,6 +158,7 @@ function App() {
     }
   };
 
+  // Effettua il logout e pulisce i dati locali
   const handleLogout = () => {
     pb.authStore.clear();
     setUser(null);
@@ -162,6 +170,7 @@ function App() {
 
   if (authLoading) return <div className="loader">Autenticazione in corso...</div>;
 
+  // Mostra schermata di login se utente non autenticato
   if (!user) {
     return (
       <div className="auth-screen">
@@ -203,7 +212,7 @@ function App() {
 
   if (loading) return <div className="loader">Caricamento...</div>;
 
-  // --- UI ---
+  // Interfaccia principale: sidebar con liste e area centrale con task e calendario
   return (
     <div className="app-modern-layout">
       <aside className="sidebar-modern">
